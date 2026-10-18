@@ -1,0 +1,377 @@
+.report-page {
+  min-height: calc(100vh - 76px);
+  width: min(var(--container), calc(100% - 32px));
+  margin: 0 auto;
+  padding: 56px 0 90px;
+}
+
+.report-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 420px;
+  gap: 28px;
+  align-items: start;
+}
+
+/* MAIN CARDS */
+
+.report-card,
+.report-preview-card,
+.report-login-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 32px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: visible;
+}
+
+.report-card {
+  padding: 34px;
+}
+
+.report-preview-card {
+  padding: 28px;
+  position: sticky;
+  top: 110px;
+}
+
+.report-card::before,
+.report-preview-card::before,
+.report-login-card::before {
+  content: "";
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  background: rgba(37, 99, 235, 0.07);
+  border-radius: 50%;
+  right: -90px;
+  top: -110px;
+  z-index: 0;
+}
+
+.report-header,
+.report-form,
+.report-error,
+.report-preview-card > *,
+.report-login-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* HEADER */
+
+.report-header {
+  margin-bottom: 24px;
+}
+
+.report-eyebrow {
+  width: fit-content;
+  color: #1d4ed8;
+  background: #dbeafe;
+  border: 1px solid #bfdbfe;
+  padding: 8px 13px;
+  border-radius: 999px;
+  font-weight: 900;
+  margin: 0 0 14px;
+}
+
+.report-header h1,
+.report-login-card h1 {
+  margin: 0;
+  color: #0f172a;
+  font-size: clamp(34px, 4vw, 52px);
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+}
+
+.report-header p,
+.report-login-card p {
+  color: #64748b;
+  line-height: 1.7;
+  max-width: 680px;
+  font-size: 16px;
+}
+
+/* FORM */
+
+.report-form {
+  display: grid;
+  gap: 18px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  overflow: visible;
+}
+
+.form-group {
+  display: grid;
+  gap: 8px;
+  position: relative;
+}
+
+.form-group label {
+  color: #334155;
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  padding: 14px 15px;
+  outline: none;
+  background: white;
+  color: #0f172a;
+  font-size: 15px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 130px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px #dbeafe;
+}
+
+.report-button,
+.report-login-button {
+  border: none;
+  background: linear-gradient(135deg, #2563eb, #0284c7);
+  color: white;
+  padding: 15px 20px;
+  border-radius: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 16px 30px rgba(37, 99, 235, 0.25);
+}
+
+.report-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.report-error {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 16px;
+  border-radius: 16px;
+  font-weight: 900;
+  margin-bottom: 20px;
+}
+
+/* LIVE PREVIEW */
+
+.preview-label {
+  width: fit-content;
+  color: #1d4ed8;
+  background: #dbeafe;
+  border: 1px solid #bfdbfe;
+  padding: 8px 13px;
+  border-radius: 999px;
+  font-weight: 900;
+  margin: 0 0 18px;
+}
+
+.preview-item-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 26px;
+  padding: 22px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.preview-item-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.preview-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.preview-type,
+.preview-status {
+  padding: 7px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.preview-type.default {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.preview-type.lost {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.preview-type.found {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.preview-status {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.preview-item-card h2 {
+  margin: 0 0 12px;
+  color: #0f172a;
+  font-size: 23px;
+  letter-spacing: -0.03em;
+}
+
+.preview-item-card p {
+  color: #64748b;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.preview-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.preview-meta span {
+  background: white;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  padding: 8px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* TIPS AND MATCHING NOTE */
+
+.report-tips,
+.matching-note {
+  margin-top: 20px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 20px;
+}
+
+.report-tips h3 {
+  margin: 0 0 12px;
+  color: #0f172a;
+  font-size: 19px;
+}
+
+.report-tips ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #64748b;
+  line-height: 1.8;
+  font-weight: 700;
+}
+
+.matching-note {
+  background: linear-gradient(135deg, #eff6ff, #ecfeff);
+  border: 1px solid #bfdbfe;
+}
+
+.matching-note span {
+  color: #2563eb;
+  font-weight: 900;
+}
+
+.matching-note p {
+  color: #64748b;
+  line-height: 1.7;
+  margin: 8px 0 0;
+}
+
+/* LOGIN REQUIRED CARD */
+
+.report-login-card {
+  max-width: 620px;
+  margin: 70px auto;
+  padding: 40px;
+  text-align: center;
+}
+
+.report-login-button {
+  display: inline-block;
+  margin-top: 18px;
+}
+
+/* IMPORTANT FOR REUSABLE DROPDOWN */
+
+.report-card,
+.report-form,
+.form-row {
+  overflow: visible;
+}
+
+.report-form .custom-select-field {
+  z-index: 50;
+}
+
+.report-form .custom-select-field:focus-within {
+  z-index: 100;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1000px) {
+  .report-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .report-preview-card {
+    position: static;
+  }
+}
+
+@media (max-width: 650px) {
+  .report-page {
+    padding: 36px 0 60px;
+  }
+
+  .report-card,
+  .report-preview-card,
+  .report-login-card {
+    border-radius: 24px;
+    padding: 22px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .report-header h1,
+  .report-login-card h1 {
+    font-size: 34px;
+  }
+}
+
+.preview-image {
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  border: 1px solid #e2e8f0;
+}

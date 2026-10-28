@@ -119,7 +119,7 @@ Campus-Connect/
 │       ├── pages/        # Website pages
 │       └── services/     # Requests to the backend API
 ├── docs/
-│   └── screenshots/      # Screenshots used in this README
+│   └── screenshots/      # Screenshots
 └── README.md
 ```
 

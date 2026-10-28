@@ -378,3 +378,173 @@
     flex-direction: column;
   }
 }
+
+
+/* CampusConnect report management popup */
+
+.crud-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.55);
+  padding: 20px;
+}
+
+.crud-modal {
+  background: white;
+  border-radius: 24px;
+  padding: 30px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.2);
+}
+
+.crud-modal-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.crud-modal h2 {
+  margin: 0 0 12px;
+  color: #0f172a;
+}
+
+.crud-modal p {
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.crud-modal-error {
+  color: #b91c1c !important;
+}
+
+.crud-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.crud-cancel-button,
+.crud-delete-button,
+.crud-save-button {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.crud-cancel-button {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.crud-delete-button {
+  background: #dc2626;
+  color: white;
+}
+
+.crud-save-button {
+  background: #2563eb;
+  color: white;
+}
+
+.crud-modal-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+/* Edit report form */
+
+.crud-edit-trigger {
+  background: #dbeafe;
+  color: #1d4ed8;
+  border: none;
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.crud-edit-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.crud-edit-form label {
+  display: grid;
+  gap: 6px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.crud-edit-form input,
+.crud-edit-form select,
+.crud-edit-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font: inherit;
+  color: #0f172a;
+  background: white;
+}
+
+.crud-edit-form textarea {
+  resize: vertical;
+}
+
+@media (max-width: 480px) {
+  .crud-modal {
+    padding: 20px;
+  }
+
+  .crud-modal-actions {
+    flex-wrap: wrap;
+  }
+}
+
+
+/* Dark mode support for Edit and Delete popups */
+
+:root[data-theme="dark"] .crud-modal {
+  background: var(--surface-solid);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+}
+
+:root[data-theme="dark"] .crud-modal h2,
+:root[data-theme="dark"] .crud-modal strong,
+:root[data-theme="dark"] .crud-modal label {
+  color: var(--text-main);
+}
+
+:root[data-theme="dark"] .crud-modal p {
+  color: var(--text-muted);
+}
+
+:root[data-theme="dark"] .crud-edit-form input,
+:root[data-theme="dark"] .crud-edit-form select,
+:root[data-theme="dark"] .crud-edit-form textarea {
+  background: var(--surface-soft);
+  color: var(--text-main);
+  border-color: var(--border-strong);
+}
+
+:root[data-theme="dark"] .crud-cancel-button {
+  background: var(--surface-muted);
+  color: var(--text-main);
+}
+
+:root[data-theme="dark"] .crud-modal-error {
+  color: #fca5a5 !important;
+}

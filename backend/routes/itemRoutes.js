@@ -4,6 +4,7 @@ const upload = require("../middleware/uploadMiddleware");
 const {
   createItem,
   getItems,
+  getMyItems,
   getItemById,
   updateItem,
   deleteItem,
@@ -17,6 +18,7 @@ const {
 const router = express.Router();
 
 router.route("/").get(getItems).post(protect, upload.single("image"), createItem);
+router.get("/mine", protect, getMyItems);
 router.get("/:id/matches", getItemMatches);  
 
 router

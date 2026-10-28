@@ -73,6 +73,10 @@ function ReportItem() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
+    if (formData.description.trim().length < 10) {
+      setError("Description must contain at least 10 characters");
+      return;
+    }
 
     if (!isAuthenticated || !token) {
       setError("Please login before reporting an item");
@@ -198,14 +202,21 @@ function ReportItem() {
 
             <div className="form-group">
               <label>Description</label>
+
               <textarea
                 name="description"
                 placeholder="Describe the item clearly. Include color, brand, marks, location details, or any useful information."
                 value={formData.description}
                 onChange={handleChange}
                 rows="5"
+                minLength={10}
+                maxLength={1000}
                 required
               ></textarea>
+              <small>
+                Description must contain 10–1000 characters.
+              </small>
+
             </div>
 
             <button className="report-button" type="submit" disabled={loading}>

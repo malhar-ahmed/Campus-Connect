@@ -78,3 +78,61 @@ export const getItemMatches = async (itemId) => {
 
   return data;
 };
+
+
+export const getMyItems = async (token) => {
+  const response = await fetch(
+    `${API_BASE_URL}/items/mine`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to load reports");
+  }
+
+  return data;
+};
+
+
+export const updateItem = async (itemId, updates, token) => {
+  const response = await fetch(`${API_BASE_URL}/items/${itemId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(updates),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to update item");
+  }
+
+  return data;
+};
+
+export const deleteItem = async (itemId, token) => {
+  const response = await fetch(`${API_BASE_URL}/items/${itemId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to delete item");
+  }
+
+  return data;
+};
+

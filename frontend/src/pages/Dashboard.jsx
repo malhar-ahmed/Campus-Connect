@@ -7,17 +7,31 @@ import {
   reviewClaim,
 } from "../services/claimService";
 import Toast from "../components/Toast";
+import {
+  getMyItems,
+  deleteItem,
+  updateItem,
+} from "../services/itemService";
 import "./Dashboard.css";
 
 function Dashboard() {
   const { user, token, isAuthenticated } = useAuth();
 
   const [myClaims, setMyClaims] = useState([]);
+  const [myItems, setMyItems] = useState([]);
+  const [reportsLoading, setReportsLoading] = useState(true);
+  const [reportsError, setReportsError] = useState("");
+  const [deletingItemId, setDeletingItemId] = useState(null);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [deleteError, setDeleteError] = useState("");
   const [receivedClaims, setReceivedClaims] = useState([]);
   const [loading, setLoading] = useState(true);
   const [reviewLoading, setReviewLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [editForm, setEditForm] = useState(null);
+  const [editSaving, setEditSaving] = useState(false);
+  const [editError, setEditError] = useState("");
 
   const [toast, setToast] = useState({
     message: "",
@@ -84,6 +98,38 @@ function Dashboard() {
     fetchDashboardData();
   }, [isAuthenticated, token]);
 
+
+
+  useEffect(() => {
+    if (!isAuthenticated || !token) return;
+
+    let active = true;
+
+    getMyItems(token)
+      .then((data) => {
+        if (active) {
+          setMyItems(data.items || []);
+          setReportsError("");
+        }
+      })
+      .catch((err) => {
+        if (active) {
+          setReportsError(err.message);
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setReportsLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [isAuthenticated, token]);
+
+
+
   useEffect(() => {
     if (!toast.message) return;
 
@@ -143,6 +189,96 @@ function Dashboard() {
       });
     } finally {
       setReviewLoading(false);
+    }
+  };
+
+  const handleDeleteReport = async (item) => {
+    try {
+      setDeletingItemId(item._id);
+      setDeleteError("");
+
+      await deleteItem(item._id, token);
+
+      setMyItems((previousItems) =>
+        previousItems.filter(
+          (report) => report._id !== item._id
+        )
+      );
+
+      setItemToDelete(null);
+
+      setToast({
+        message: "Report deleted successfully",
+        type: "success",
+      });
+    } catch (err) {
+      setDeleteError(err.message);
+    } finally {
+      setDeletingItemId(null);
+    }
+  };
+
+
+  const openEditReport = (item) => {
+    setEditError("");
+
+    setEditForm({
+      _id: item._id,
+      title: item.title || "",
+      description: item.description || "",
+      type: item.type || "lost",
+      category: item.category || "Other",
+      location: item.location || "",
+      incidentDate: item.incidentDate
+        ? item.incidentDate.slice(0, 10)
+        : "",
+    });
+  };
+
+  const handleEditChange = (event) => {
+    const { name, value } = event.target;
+
+    setEditForm((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+  };
+
+  const handleSaveEdit = async (event) => {
+    event.preventDefault();
+
+    if (!editForm || editSaving) return;
+
+    try {
+      setEditSaving(true);
+      setEditError("");
+
+      const { _id, ...updates } = editForm;
+
+      const result = await updateItem(
+        _id,
+        updates,
+        token
+      );
+
+      setMyItems((previousItems) =>
+        previousItems.map((item) =>
+          item._id === _id
+            ? { ...item, ...result.item }
+            : item
+        )
+      );
+
+      setEditForm(null);
+
+      setToast({
+        message: "Report updated successfully",
+        type: "success",
+      });
+    } catch (err) {
+      setEditError(err.message);
+    } finally {
+      setEditSaving(false);
     }
   };
 
@@ -216,6 +352,68 @@ function Dashboard() {
           </Link>
         )}
       </section>
+
+
+      <section
+        className="dashboard-list-card"
+        style={{ marginBottom: "24px" }}
+      >
+        <h2>My Reports</h2>
+
+        {reportsLoading ? (
+          <p className="dashboard-muted">Loading your reports...</p>
+        ) : reportsError ? (
+          <p className="dashboard-error">{reportsError}</p>
+        ) : myItems.length === 0 ? (
+          <p className="dashboard-muted">
+            You have not reported any items yet.
+          </p>
+        ) : (
+          <div className="claim-list">
+            {myItems.map((item) => (
+              <article className="claim-card" key={item._id}>
+                <div>
+                  <h3>{item.title}</h3>
+                  <p>
+                    {item.type} · {item.category} · {item.location}
+                  </p>
+                  <p>Approval: {item.approvalStatus}</p>
+
+                  {item.approvalStatus === "approved" && (
+                    <Link to={`/items/${item._id}`}>
+                      View Report
+                    </Link>
+                  )}
+
+                  <div className="claim-actions">
+                    <button
+                      type="button"
+                      className="crud-edit-trigger"
+                      onClick={() => openEditReport(item)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      className="reject-claim-button"
+                      onClick={() => {
+                        setDeleteError("");
+                        setItemToDelete(item);
+                      }}
+                      disabled={deletingItemId === item._id}
+                    >
+                      {deletingItemId === item._id
+                        ? "Deleting..."
+                        : "Delete"}
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+
 
       {loading && <p className="dashboard-message">Loading dashboard...</p>}
 
@@ -323,6 +521,184 @@ function Dashboard() {
             )}
           </div>
         </section>
+      )}
+
+
+      {itemToDelete && (
+        <div className="crud-modal-overlay">
+          <div
+            className="crud-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-report-title"
+          >
+            <div className="crud-modal-icon">🗑️</div>
+
+            <h2 id="delete-report-title">
+              Delete Report?
+            </h2>
+
+            <p>
+              Are you sure you want to permanently delete
+              <strong> "{itemToDelete.title}"</strong>?
+            </p>
+
+            <p>This action cannot be undone.</p>
+
+            {deleteError && (
+              <p className="crud-modal-error" role="alert">
+                {deleteError}
+              </p>
+            )}
+
+            <div className="crud-modal-actions">
+              <button
+                type="button"
+                className="crud-cancel-button"
+                disabled={deletingItemId !== null}
+                onClick={() => setItemToDelete(null)}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="crud-delete-button"
+                disabled={deletingItemId !== null}
+                onClick={() => handleDeleteReport(itemToDelete)}
+              >
+                {deletingItemId !== null
+                  ? "Deleting..."
+                  : "Delete Report"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {editForm && (
+        <div className="crud-modal-overlay">
+          <div
+            className="crud-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="edit-report-title"
+          >
+            <h2 id="edit-report-title">Edit Item Report</h2>
+            <p>Update your report details below.</p>
+
+            {editError && (
+              <p className="crud-modal-error" role="alert">
+                {editError}
+              </p>
+            )}
+
+            <form className="crud-edit-form" onSubmit={handleSaveEdit}>
+              <label>
+                Item Title
+                <input
+                  name="title"
+                  value={editForm.title}
+                  onChange={handleEditChange}
+                  minLength={2}
+                  maxLength={100}
+                  required
+                />
+              </label>
+
+              <label>
+                Report Type
+                <select
+                  name="type"
+                  value={editForm.type}
+                  onChange={handleEditChange}
+                  required
+                >
+                  <option value="lost">Lost Item</option>
+                  <option value="found">Found Item</option>
+                </select>
+              </label>
+
+              <label>
+                Category
+                <select
+                  name="category"
+                  value={editForm.category}
+                  onChange={handleEditChange}
+                  required
+                >
+                  {[
+                    "Electronics",
+                    "Documents",
+                    "Bags",
+                    "Clothing",
+                    "Keys",
+                    "Books",
+                    "Accessories",
+                    "Other",
+                  ].map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label>
+                Location
+                <input
+                  name="location"
+                  value={editForm.location}
+                  onChange={handleEditChange}
+                  required
+                />
+              </label>
+
+              <label>
+                Lost / Found Date
+                <input
+                  type="date"
+                  name="incidentDate"
+                  value={editForm.incidentDate}
+                  onChange={handleEditChange}
+                  required
+                />
+              </label>
+
+              <label>
+                Description
+                <textarea
+                  name="description"
+                  value={editForm.description}
+                  onChange={handleEditChange}
+                  minLength={10}
+                  maxLength={1000}
+                  rows={4}
+                  required
+                />
+              </label>
+
+              <div className="crud-modal-actions">
+                <button
+                  type="button"
+                  className="crud-cancel-button"
+                  disabled={editSaving}
+                  onClick={() => setEditForm(null)}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  className="crud-save-button"
+                  disabled={editSaving}
+                >
+                  {editSaving ? "Saving..." : "Save Changes"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </main>
   );

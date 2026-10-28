@@ -40,6 +40,7 @@ const createItem = async (req, res) => {
       item,
     });
   } catch (error) {
+    console.error("Create item error:", error);
     res.status(500).json({
       success: false,
       message: "Failed to create item report",
@@ -47,6 +48,28 @@ const createItem = async (req, res) => {
     });
   }
 };
+
+
+ // Get all items reported by the logged-in user
+const getMyItems = async (req, res) => {
+  try {
+    const items = await Item.find({
+      owner: req.user._id,
+    }).sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: items.length,
+      items,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to load your reports",
+    });
+  }
+};
+
 
 // Get all approved items
 const getItems = async (req, res) => {
@@ -389,6 +412,7 @@ const getItemMatches = async (req, res) => {
 module.exports = {
   createItem,
   getItems,
+  getMyItems,
   getItemById,
   updateItem,
   deleteItem,
